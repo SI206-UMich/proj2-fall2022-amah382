@@ -148,7 +148,7 @@ def get_detailed_listing_database(html_file):
         new_tup = item + tup
         det_list.append(new_tup)
    # print(det_list)
-    return det_list
+    return det_list 
 
 
 def write_csv(data, filename):
@@ -173,7 +173,14 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    pass
+    sorted_tuples = sorted(data, key=lambda x: x[1])
+    headers = ['Listing Title', 'Cost', 'Listing ID', 'Policy Number', 'Place Type', 'Number of Bedrooms']
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
+        for tup in sorted_tuples:
+            writer.writerow(tup)
+    file.close()
 
 
 def check_policy_numbers(data):
@@ -195,7 +202,20 @@ def check_policy_numbers(data):
     ]
 
     """
-    pass
+    pattern1 = r'20\d\d\-00\d\d\d\dSTR'
+    pattern2 = r'STR\-000\d\d\d\d'
+    id_list = []
+   # looping through to check whether the policy number matches the regex for each tuple
+    for tup in data:
+        if (bool(re.search(pattern1, tup[3])) or bool(re.search(pattern2, tup[3]))):
+            continue
+        elif (tup[3] == "Pending" or tup[3] == "Exempt"):
+            continue
+        else:
+            id_list.append(tup[2])
+   # print(id_list)
+    return id_list
+
 
 
 def extra_credit(listing_id):
