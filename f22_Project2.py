@@ -83,7 +83,48 @@ def get_listing_information(listing_id):
         number of bedrooms
     )
     """
-    pass
+    list2 = []
+
+    for filename in os.listdir("html_files/"):
+        match = re.search(listing_id, filename)
+        if match:
+            foundfile = filename
+    file = open("html_files/" + foundfile)
+    content = file.read()
+    soup = BeautifulSoup(content, 'html.parser')
+    file.close()
+
+    for tag in soup.find(attrs={"class" : "f19phm7j dir dir-ltr"}):
+       policy = tag.text
+       res = policy.split(':')[-1]
+       if (bool(re.search("[Pp]ending", res))):
+           list2.append("Pending")
+       elif (bool(re.search("needed", res))):
+           list2.append("Exempt")
+       else:
+           list2.append(res)
+
+    for tag in soup.find(attrs={"class" : "_14i3z6h"}):
+       placeType = tag.text
+       res = placeType.split(" ")[0]
+       if res == "Private":
+           list2.append("Private Room")
+       elif res == "Entire":
+           list2.append("Entire Room")
+       else:
+           list2.append("Shared Room")
+
+    for tag in soup.find(attrs={"class" : "lgx66tx dir dir-ltr"}).find_all("span")[5]:
+       if tag == "Studio":
+           list2.append(1)
+       else:
+           numBeds = tag.split(" ")[0]
+           list2.append(int(numBeds))
+           
+    rel_info = tuple(list2[1:])
+   # print(rel_info)
+    return rel_info
+
 
 
 def get_detailed_listing_database(html_file):
