@@ -1,3 +1,8 @@
+# Your name: Alex Mah
+# Your student id: 47940411
+# Your email: alchuang@umich.edu
+# List who you have worked with on this project: Kevin Song, Alex Chuang
+
 from xml.sax import parseString
 from bs4 import BeautifulSoup
 import re
@@ -33,30 +38,29 @@ def get_listings_from_search_results(html_file):
     names = []
     costs = []
     ids = []
-
-    for tag in soup.find_all(attrs={"class" : "t1ojoys dir dir-ltr"}):
+    for tag in soup.find_all(attrs={"class" : "t1jojoys dir dir-ltr"}):
         name = tag.text
         names.append(name)
-    
+ 
     for tag in soup.find_all(attrs={"class" : "_tyxjp1"}):
         cost = tag.text[1:]
         costs.append(int(cost))
-
-    for tag in soup.find_all(attrs= {"itemprop" : "url"}):
+       
+    for tag in soup.find_all(attrs={"itemprop" : "url"}):
         url = tag["content"]
         pattern = r"(\d+)"
         id = re.findall(pattern, url)
         ids.append(id[0])
-
-    for i in range (len(names)):
+  
+    for i in range(len(names)):
         tuple_list = []
         tuple_list.append(names[i])
         tuple_list.append(costs[i])
         tuple_list.append(ids[i])
         tup = tuple(tuple_list)
         list.append(tup)
-
-    print(list)
+ 
+   # print(list)
     return list
 
 def get_listing_information(listing_id):
@@ -272,12 +276,13 @@ class TestCases(unittest.TestCase):
         # check that each item in the list is a tuple
         for item in listings:
             self.assertEqual(type(item), tuple)
+ 
         # check that the first title, cost, and listing id tuple is correct (open the search results html and find it)
         file = open("html_files/mission_district_search_results.html", 'r')
         content = file.read()
         file.close()
         soup = BeautifulSoup(content, 'html.parser')
-        s1 = soup.find(attrs={"class" : "t1ojoys dir dir-ltr"})
+        s1 = soup.find(attrs={"class" : "t1jojoys dir dir-ltr"})
         name = s1.text
         s2 = soup.find(attrs={"class" : "_tyxjp1"})
         cost = int(s2.text[1:])
@@ -311,12 +316,12 @@ class TestCases(unittest.TestCase):
             # check that the third element in the tuple is an int
             self.assertEqual(type(listing_information[2]), int)
         # check that the first listing in the html_list has policy number 'STR-0001541'
-
+        self.assertEqual(listing_informations[0][0], "STR-0001541")
         # check that the last listing in the html_list is a "Private Room"
-
+        self.assertEqual(listing_informations[-1][1], "Private Room")
         # check that the third listing has one bedroom
-
-        pass
+        self.assertEqual(listing_informations[2][2], 1)
+        
 
     def test_get_detailed_listing_database(self):
         # call get_detailed_listing_database on "html_files/mission_district_search_results.html"
@@ -328,14 +333,16 @@ class TestCases(unittest.TestCase):
             # assert each item in the list of listings is a tuple
             self.assertEqual(type(item), tuple)
             # check that each tuple has a length of 6
-
+            self.assertEqual(len(item), 6)
         # check that the first tuple is made up of the following:
         # 'Loft in Mission District', 210, '1944564', '2022-004088STR', 'Entire Room', 1
+        following = ('Loft in Mission District', 210, '1944564', '2022-004088STR', 'Entire Room', 1)
+        self.assertEqual(detailed_database[0], following)
 
         # check that the last tuple is made up of the following:
         # 'Guest suite in Mission District', 238, '32871760', 'STR-0004707', 'Entire Room', 1
-
-        pass
+        tup = ('Guest suite in Mission District', 238, '32871760', 'STR-0004707', 'Entire Room', 1)
+        self.assertEqual(detailed_database[-1], tup)
 
     def test_write_csv(self):
         # call get_detailed_listing_database on "html_files/mission_district_search_results.html"
@@ -352,12 +359,13 @@ class TestCases(unittest.TestCase):
         # check that there are 21 lines in the csv
         self.assertEqual(len(csv_lines), 21)
         # check that the header row is correct
-
+        header = ['Listing Title', 'Cost', 'Listing ID', 'Policy Number', 'Place Type', 'Number of Bedrooms']
         # check that the next row is Private room in Mission District,82,51027324,Pending,Private Room,1
-
+        row1 = ['Private room in Mission District', '82', '51027324', 'Pending', 'Private Room', '1']
+        self.assertEqual(csv_lines[1], row1)
         # check that the last row is Apartment in Mission District,399,28668414,Pending,Entire Room,2
-
-        pass
+        last_row = ['Apartment in Mission District', '399', '28668414', 'Pending', 'Entire Room', '2']
+        self.assertEqual(csv_lines[-1], last_row)
 
     def test_check_policy_numbers(self):
         # call get_detailed_listing_database on "html_files/mission_district_search_results.html"
@@ -368,11 +376,12 @@ class TestCases(unittest.TestCase):
         # check that the return value is a list
         self.assertEqual(type(invalid_listings), list)
         # check that there is exactly one element in the string
-
+        self.assertEqual(len(invalid_listings), 1)
         # check that the element in the list is a string
+        self.assertEqual(type(invalid_listings[0]), str)
 
         # check that the first element in the list is '16204265'
-        pass
+        self.assertEqual(invalid_listings[0], "16204265")
 
 
 if __name__ == '__main__':
