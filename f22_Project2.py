@@ -120,7 +120,7 @@ def get_listing_information(listing_id):
        else:
            numBeds = tag.split(" ")[0]
            list2.append(int(numBeds))
-           
+
     rel_info = tuple(list2[1:])
    # print(rel_info)
     return rel_info
@@ -141,7 +141,14 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
-    pass
+    det_list = []
+    list = get_listings_from_search_results(html_file)
+    for item in list:
+        tup = get_listing_information(item[2])
+        new_tup = item + tup
+        det_list.append(new_tup)
+   # print(det_list)
+    return det_list
 
 
 def write_csv(data, filename):
