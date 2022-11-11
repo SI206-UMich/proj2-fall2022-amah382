@@ -178,11 +178,25 @@ class TestCases(unittest.TestCase):
         # check that the variable you saved after calling the function is a list
         self.assertEqual(type(listings), list)
         # check that each item in the list is a tuple
-
+        for item in listings:
+            self.assertEqual(type(item), tuple)
         # check that the first title, cost, and listing id tuple is correct (open the search results html and find it)
+        file = open("html_files/mission_district_search_results.html", 'r')
+        content = file.read()
+        file.close()
+        soup = BeautifulSoup(content, 'html.parser')
+        s1 = soup.find(attrs={"class" : "t1ojoys dir dir-ltr"})
+        name = s1.text
+        s2 = soup.find(attrs={"class" : "_tyxjp1"})
+        cost = int(s2.text[1:])
+        s3 = soup.find(attrs={"itemprop" : "url"})
+        id = re.search("(\d+)", s3["content"])
+        self.assertEqual(listings[0][0], name)
+        self.assertEqual(listings[0][1], cost)
+        self.assertEqual(listings[0][2], id.group())
 
         # check that the last title is correct (open the search results html and find it)
-        pass
+        
 
     def test_get_listing_information(self):
         html_list = ["1623609",
